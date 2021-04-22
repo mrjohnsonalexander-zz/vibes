@@ -69,6 +69,7 @@ function vibeForm() {
 }
 
 async function createVibe(event){
+  // Create Vibe and Refresh Page
   // vibeForm values
   var vibe_title = document.querySelector('#vibe-form-title-id').value;
   var vibe_description = document.querySelector('#vibe-form-description-id').value;
@@ -89,7 +90,13 @@ async function createVibe(event){
           location: vibe_location,
           img_url: vibe_img_url,
       })
-  }).then(response => {console.log(response)});
+  }).then(response => {
+        if (response.status == 200) {
+            location.reload()
+        } else {
+          console.log(response);
+        }
+      })
 }
 
 // This function comes from:
