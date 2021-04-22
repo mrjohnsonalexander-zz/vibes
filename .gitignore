@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # django key
-/secret_key.txt
+secret_key.txt
