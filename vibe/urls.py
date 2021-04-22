@@ -9,5 +9,5 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
     path("profile/<str:username>", views.profile, name="profile"),
-    path("vibe", views.vibe, name="vibe"),
+    path("vibe/<str:vibe_id>", views.vibe, name="vibe"),
 ]

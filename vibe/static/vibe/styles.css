@@ -2,6 +2,15 @@
     display: block;
 }
 
+.vibe-metadata {
+    list-style-type: none;
+    text-align: left;
+    float: left;
+    padding-left: 5%;
+    width: 65%;
+    list-style: none;
+}
+
 .vibe-button {
     color: white;
     background-color: blue;
@@ -10,3 +19,26 @@
 .vibe-title {
     width: 80%;
 }
+
+.pic {
+    float: left;
+    width: 30%;
+    padding-left: 10px;
+}
+
+.vibe-record {
+    margin-top: 10px;
+    max-height: 30%;
+    display: inline-block;
+    flex-wrap: wrap;
+    outline: 1px solid lightgrey;
+}
+
+.vibe-metadata {
+    text-align: left;
+    float: left;
+    padding-left: 5%;
+    width: 65%;
+    list-style: none;
+}
+

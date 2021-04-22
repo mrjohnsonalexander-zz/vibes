@@ -102,7 +102,7 @@ def profile(request, username):
 
 
 @requires_csrf_token
-def vibe(request):
+def vibe(request, vibe_id):
     """
     Post, Put, and Get vibes
     """
@@ -141,7 +141,13 @@ def vibe(request):
     # Assume GET request
     else:
         if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse("vibe:index"))
+            if vibe_id:
+                vibe = Vibe.object.get(pk=vibe_id)
+                return render(request, "vibe/index.html", {
+                    "vibe": vibe
+                })
+            else:
+                return HttpResponseRedirect(reverse("vibe:index"))
         else:
             return render(request, "vibe/login.html", {
                 "message": "Must login to post."
