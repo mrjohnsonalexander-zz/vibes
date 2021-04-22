@@ -2,15 +2,6 @@
     display: block;
 }
 
-.vibe-metadata {
-    list-style-type: none;
-    text-align: left;
-    float: left;
-    padding-left: 5%;
-    width: 65%;
-    list-style: none;
-}
-
 .vibe-button {
     color: white;
     background-color: blue;
