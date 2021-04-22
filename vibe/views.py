@@ -88,7 +88,7 @@ def profile(request, username):
     # Create post
     if request.method == "POST":
         profile_form = ProfileForm(request.POST)
-        if post_form.is_valid() and request.user.is_authenticated:
+        if profile_form.is_valid() and request.user.is_authenticated:
             print('Creating profile')
             profile = profile_form.save(commit=False)
             profile.creator = request.user
@@ -102,28 +102,27 @@ def profile(request, username):
 
 
 @requires_csrf_token
-def vibe(request, vibe_id):
+def vibe(request):
     """
     Post, Put, and Get vibes
     """
     print("Vibing")
     if request.method == "POST":
+        # vibe.js vibeForm
         body = json.loads(request.body.decode('utf-8'))
-        # TODO Pass remaining form input values
         vibe_data = {
            'title': body['title'],
            'creator': request.user,
-           'description': "Default Description",
-           'location': "Seattle",
-           'img_url': "https://i.redd.it/61iy0forpz331.jpg",
+           'description': body['description'],
+           'location': body['location'],
+           'img_url': body['img_url'],
         }
         vibeform = VibeForm(vibe_data)
         if vibeform.is_valid() and request.user.is_authenticated:
-            print('Create vibe')
             vibe = vibeform.save(commit=False)
             vibe.date_created = datetime.now()
             vibe.save()
-            return HttpResponseRedirect(reverse("vibe:index"))
+            return HttpResponse(status=200)
         else:
             return render(request, "vibe/login.html", {
                 "message": "Must login to post."
@@ -141,14 +140,14 @@ def vibe(request, vibe_id):
     # Assume GET request
     else:
         if request.user.is_authenticated:
-            if vibe_id:
-                vibe = Vibe.object.get(pk=vibe_id)
-                return render(request, "vibe/index.html", {
-                    "vibe": vibe
-                })
-            else:
-                return HttpResponseRedirect(reverse("vibe:index"))
+            return HttpResponseRedirect(reverse("vibe:index"))
         else:
             return render(request, "vibe/login.html", {
                 "message": "Must login to post."
             })
+
+def vibe_details(request, vibe_id):
+    vibe = Vibe.object.get(pk=vibe_id)
+    return render(request, "vibe/index.html", {
+        "vibe": vibe
+        })

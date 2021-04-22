@@ -1,4 +1,5 @@
 .vibe-form {
+    padding-left: 10px;
     display: block;
 }
 
@@ -8,6 +9,18 @@
 }
 
 .vibe-title {
+    width: 80%;
+}
+
+.vibe-description {
+    width: 80%;
+}
+
+.vibe-location {
+    width: 80%;
+}
+
+.vibe-img-url {
     width: 80%;
 }
 

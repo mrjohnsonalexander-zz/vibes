@@ -5,7 +5,7 @@
 {% if vibe %}
 <h1>Vibe Details</h1>
 <li id="vibe-{{ vibe.id }}" class="vibe-record">
-    <a href="{% url 'vibe:vibe' vibe.pk %}">
+    <a href="{% url 'vibe:vibe_details' vibe.pk %}">
     <img class="pic" src="{{ vibe.img_url }}" alt="Image not found"</img>
     </a>
     <ul class="vibe-metadata">
@@ -40,7 +40,7 @@
 <div id="community-vibes">
     {% for vibe in vibes %}
     <li id="vibe-{{ vibe.id }}" class="vibe-record">
-        <a href="{% url 'vibe:vibe' vibe.pk %}">
+        <a href="{% url 'vibe:vibe_details' vibe.pk %}">
         <img class="pic" src="{{ vibe.img_url }}" alt="Image not found"</img>
         </a>
         <ul class="vibe-metadata">

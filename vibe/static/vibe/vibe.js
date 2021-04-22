@@ -4,9 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 function vibeForm() {
-  // TODO Add additional vibe form inputs
-  // Vibe sharing form
-  console.log('Create vibe form for');
+  // Form used to create vibes
+  console.log('Create vibe form');
   vibe = document.createElement('div');
   vibe.id = 'vibe-id';
   vibe.classList.add("vibe-form");
@@ -18,12 +17,35 @@ function vibeForm() {
   form = vibe.lastElementChild;
   form.method = 'POST';
   form.action = '/vibe';
+  form.enctype="multipart/form-data"
   // Title
   form.append(document.createElement('input'));
   form_title = form.firstElementChild;
   form_title.classList.add('vibe-title');
   form_title.type = 'text';
   form_title.id = 'vibe-form-title-id';
+  form_title.placeholder = "What is your vibe's title?"
+  // Description
+  form.append(document.createElement('input'));
+  form_description = form.lastElementChild;
+  form_description.classList.add('vibe-description');
+  form_description.type = 'text';
+  form_description.id = 'vibe-form-description-id';
+  form_description.placeholder = "What is your vibe's description?"
+  // Location
+  form.append(document.createElement('input'));
+  form_location = form.lastElementChild;
+  form_location.classList.add('vibe-location');
+  form_location.type = 'text';
+  form_location.id = 'vibe-form-location-id';
+  form_location.placeholder = "Seattle"
+  // img_url
+  form.append(document.createElement('input'));
+  form_img_url = form.lastElementChild;
+  form_img_url.classList.add('vibe-img-url');
+  form_img_url.type = 'text';
+  form_img_url.id = 'vibe-form-img-url-id';
+  form_img_url.placeholder = "https://i.redd.it/61iy0forpz331.jpg"
   // csrf token
   form.append(document.createElement('input'));
   form_csrf = form.lastElementChild;
@@ -37,9 +59,8 @@ function vibeForm() {
   form_button.classList.add('vibe-button');
   form_button.type = 'button';
   form_button.value = 'Create';
-  form_title.placeholder = "What vibe do you want to give?'"
   document.getElementById('vibe').replaceWith(vibe);
-  // Button PUT post update
+  // Create vibe with form data
   document.querySelector('#vibe-form-button').addEventListener('click', (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -48,11 +69,14 @@ function vibeForm() {
 }
 
 async function createVibe(event){
-  // Create vibe
+  // vibeForm values
   var vibe_title = document.querySelector('#vibe-form-title-id').value;
-  console.log(vibe_title);
+  var vibe_description = document.querySelector('#vibe-form-description-id').value;
+  var vibe_location = document.querySelector('#vibe-form-location-id').value;
+  var vibe_img_url = document.querySelector('#vibe-form-img-url-id').value;
   const csrftoken = document.querySelector('[name=csrfmiddlewaretoken').value
   // Mannuall passing csrf token for vibe form since not using FormModel
+  console.log("vibeForm values being POST'd");
   const request = new Request(
     '/vibe',
     {headers: {'X-CSRFToken': csrftoken}}
@@ -60,9 +84,12 @@ async function createVibe(event){
   await fetch(request, {
       method: 'POST',
       body: JSON.stringify({
-          title: vibe_title
+          title: vibe_title,
+          description: vibe_description,
+          location: vibe_location,
+          img_url: vibe_img_url,
       })
-  }).then(response => response.json()).then(result => {console.log(result)});
+  }).then(response => {console.log(response)});
 }
 
 // This function comes from:
