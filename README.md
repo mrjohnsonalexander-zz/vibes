@@ -2,8 +2,7 @@ The following is the link to mrjohnsonalexander Harvards Extensions School CSCI 
 https://github.com/mrjohnsonalexander/vibes
 
 # Introduction
-A vibe is a feeling inpsired by a shared personal experience, members post vibes offered to our community, and transparently share reviews of vibes experienced.
-The canary launch of this platform is targeted for USA WA State adults over 18 years, and ~75% of the 7.5 million WA Residence are over 18.
+Vibe is a online community platform for listing and reviewing shared experiences. A vibe is a feeling inpsired by a shared personal experience, members post vibes offered to our community, and transparently share reviews of vibes experienced. The canary launch of this platform is targeted for USA WA State adults over 18 years, and ~75% of the 7.5 million WA Residence are over 18.
 
 # Background
 This is a Django, Javascript, HTML, and CSS only application.
