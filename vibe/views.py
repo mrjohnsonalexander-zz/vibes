@@ -1,18 +1,18 @@
+from datetime import datetime
+
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
-import json
-
-from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 
 from .forms import ProfileForm, VibeForm
 
+import json
+
 from .models import User, Vibe
 
-from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
-from django.contrib.auth.decorators import login_required
 
 def index(request):
     # Authenticated users view vibes
@@ -136,7 +136,12 @@ def vibe(request, vibe_id):
             vibe.description = body['description']
             vibe.location = body['location']
             vibe.img_url = body['img_url']
-            vibe.save(update_fields=['title', 'description', 'location', 'img_url'])
+            vibe.save(update_fields=[
+                'title',
+                'description',
+                'location',
+                'img_url'
+            ])
             return HttpResponseRedirect(reverse("vibe:index"))
         else:
             return render(request, "vibe/login.html", {
@@ -150,6 +155,7 @@ def vibe(request, vibe_id):
             return render(request, "vibe/login.html", {
                 "message": "Must login to post."
             })
+
 
 def vibe_details(request, vibe_id):
     vibe = Vibe.object.get(pk=vibe_id)

@@ -20,7 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# The following two lines inspired by: https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
+# The following two lines inspired by:
+# https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 with open('C:\\Users\\mrjoh\\OneDrive\\Desktop\\harvard\\csci e-33a\\Project Final\\vibes\\vibesite\\secret_key.txt') as f:
     SECRET_KEY = f.read().strip()
 

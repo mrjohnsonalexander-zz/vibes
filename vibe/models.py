@@ -31,7 +31,8 @@ class Vibe(models.Model):
     title = models.CharField(max_length=180, blank=True)
     description = models.TextField()
     location = models.TextField()
-    date_created = models.DateTimeField(auto_created=True, null=False, blank=False)
+    date_created = models.DateTimeField(
+        auto_created=True, null=False, blank=False)
     img_url = models.URLField(null=True, blank=True)
     creator = models.ForeignKey(
         User,
