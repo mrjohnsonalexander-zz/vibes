@@ -11,4 +11,5 @@ urlpatterns = [
     path("profile/<str:username>", views.profile, name="profile"),
     path("vibe_details/<str:vibe_id>", views.vibe_details, name="vibe_details"),
     path("vibe", views.vibe, name="vibe"),
+    path("vibe/<str:vibe_id>", views.vibe, name="vibe"),
 ]

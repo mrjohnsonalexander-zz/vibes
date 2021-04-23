@@ -102,7 +102,7 @@ def profile(request, username):
 
 
 @requires_csrf_token
-def vibe(request):
+def vibe(request, vibe_id):
     """
     Post, Put, and Get vibes
     """
@@ -130,8 +130,13 @@ def vibe(request):
     elif request.method == "PUT":
         if request.user.is_authenticated:
             print('Updating vibe')
-            vibe = request.PUT
-            print(vibe)
+            body = json.loads(request.body.decode('utf-8'))
+            vibe = Vibe.objects.get(pk=vibe_id)
+            vibe.title = body['title']
+            vibe.description = body['description']
+            vibe.location = body['location']
+            vibe.img_url = body['img_url']
+            vibe.save(update_fields=['title', 'description', 'location', 'img_url'])
             return HttpResponseRedirect(reverse("vibe:index"))
         else:
             return render(request, "vibe/login.html", {

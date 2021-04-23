@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
   vibeForm();
 })
 
-function vibeForm() {
-  // Form used to create vibes
+function vibeForm(vibe_id='') {
   console.log('Create vibe form');
   vibe = document.createElement('div');
-  vibe.id = 'vibe-id';
+  vibe.dataset.vibeid = vibe_id;
+  vibe.id = `vibe-${vibe_id}`;
   vibe.classList.add("vibe-form");
   vibe.append(document.createElement('h4'));
   headers = vibe.firstElementChild;
@@ -23,28 +23,28 @@ function vibeForm() {
   form_title = form.firstElementChild;
   form_title.classList.add('vibe-title');
   form_title.type = 'text';
-  form_title.id = 'vibe-form-title-id';
+  form_title.id = `vibe-form-title-${vibe_id}`;
   form_title.placeholder = "What is your vibe's title?"
   // Description
   form.append(document.createElement('input'));
   form_description = form.lastElementChild;
   form_description.classList.add('vibe-description');
   form_description.type = 'text';
-  form_description.id = 'vibe-form-description-id';
+  form_description.id = `vibe-form-description-${vibe_id}`;
   form_description.placeholder = "What is your vibe's description?"
   // Location
   form.append(document.createElement('input'));
   form_location = form.lastElementChild;
   form_location.classList.add('vibe-location');
   form_location.type = 'text';
-  form_location.id = 'vibe-form-location-id';
+  form_location.id = `vibe-form-location-${vibe_id}`;
   form_location.placeholder = "Seattle"
   // img_url
   form.append(document.createElement('input'));
   form_img_url = form.lastElementChild;
   form_img_url.classList.add('vibe-img-url');
   form_img_url.type = 'text';
-  form_img_url.id = 'vibe-form-img-url-id';
+  form_img_url.id = `vibe-form-img-url-${vibe_id}`;
   form_img_url.placeholder = "https://i.redd.it/61iy0forpz331.jpg"
   // csrf token
   form.append(document.createElement('input'));
@@ -55,20 +55,81 @@ function vibeForm() {
   // Button
   form.append(document.createElement('input'));
   form_button = form.lastElementChild;
-  form_button.id = 'vibe-form-button';
+  form_button.id = `vibe-form-button-${vibe_id}`;
   form_button.classList.add('vibe-button');
   form_button.type = 'button';
   form_button.value = 'Create';
-  document.getElementById('vibe').replaceWith(vibe);
-  // Create vibe with form data
-  document.querySelector('#vibe-form-button').addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    createVibe(event);
-  });
+  // Create new Update form with existing vibe data
+  if (vibe_id == '') {    
+    document.getElementById('vibe').replaceWith(vibe);
+    // Create vibe with form data
+    document.querySelector('#vibe-form-button-').addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      createVibe();
+    });
+  } else {
+    form_title.placeholder = document.querySelector(`#vibe-record-title-${vibe_id}`).innerText;
+    form_description.placeholder = document.querySelector(`#vibe-record-description-${vibe_id}`).innerText;
+    form_location.placeholder = document.querySelector(`#vibe-record-location-${vibe_id}`).innerText;
+    // TODO Fix bug. form_img_url.placeholder set above is being returned instead of current value
+    form_img_url.placeholder = document.querySelector(`#vibe-pic-${vibe_id}`).src;
+    document.getElementById(`vibe-${vibe_id}`).replaceWith(vibe);
+    form_button.value = 'Save';
+    // Create vibe with form data
+    document.querySelector(`#vibe-form-button-${vibe_id}`).addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      updateVibe(event);
+    });
+  } 
 }
 
-async function createVibe(event){
+async function updateVibe(event){
+  // Get vibe form Values
+  vibe_id = event.target.parentElement.parentElement.getAttribute("data-vibeid");
+  var vibe_title = document.querySelector(`#vibe-form-title-${vibe_id}`).value;
+  var vibe_description = document.querySelector(`#vibe-form-description-${vibe_id}`).value;
+  var vibe_location = document.querySelector(`#vibe-form-location-${vibe_id}`).value;
+  var vibe_img_url = document.querySelector(`#vibe-form-img-url-${vibe_id}`).value;
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken').value
+  // Get placeholders if no value provided
+  if (vibe_title == '') {
+    vibe_title = document.querySelector(`#vibe-form-title-${vibe_id}`).placeholder;
+  }
+  if (vibe_description == '') {
+    vibe_description = document.querySelector(`#vibe-form-description-${vibe_id}`).placeholder;
+  }
+  if (vibe_location == '') {
+    vibe_location = document.querySelector(`#vibe-form-location-${vibe_id}`).placeholder;
+  }
+  if (vibe_img_url == '') {
+    vibe_img_url = document.querySelector(`#vibe-form-img-url-${vibe_id}`).placeholder;
+  }
+  // Mannuall passing csrf token for vibe form since not using FormModel
+  console.log("Vibe being updated");
+  const request = new Request(
+    `/vibe/${vibe_id}`,
+    {headers: {'X-CSRFToken': csrftoken}}
+  );
+  await fetch(request, {
+      method: 'PUT',
+      body: JSON.stringify({
+          title: vibe_title,
+          description: vibe_description,
+          location: vibe_location,
+          img_url: vibe_img_url,
+      })
+  }).then(response => {
+        if (response.status == 200) {
+            location.reload()
+        } else {
+          console.log(response);
+        }
+      })
+}
+
+async function createVibe(){
   // Create Vibe and Refresh Page
   // vibeForm values
   var vibe_title = document.querySelector('#vibe-form-title-id').value;
