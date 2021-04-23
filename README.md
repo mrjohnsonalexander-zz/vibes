@@ -2,7 +2,7 @@
 Vibe is an online community platform for listing and reviewing shared experiences; the canary launch of this platform is targeted for USA WA State adults over 18 years, and ~75% of the 7.5 million WA Residence are over 18. A vibe is a feeling inspired by a shared personal experience, members post vibes offered to our community, and transparently share reviews of vibes experienced. 
 
 # Background
-This is a Django, Javascript, HTML, and CSS only application; create vibesite project, vibe app, and users (admin, firstadopter, secondadopter). Submitted proposal for review, and Authored Status report.
+This is a Django, Javascript, HTML, and CSS only application; create vibesite project, vibe app, and users (admin, firstadopter, secondadopter). Submitted proposal for review, and Authored Status report. The following capabilities are enabled:
 
 # Auth Flow
 Register
