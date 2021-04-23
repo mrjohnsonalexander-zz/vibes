@@ -4,7 +4,7 @@ Vibe is an online community platform for listing and reviewing shared experience
 # Background
 This is a Django, Javascript, HTML, and CSS only application; create vibesite project, vibe app, and users (admin, firstadopter, secondadopter). Submitted proposal for review, and Authored Status report. The following capabilities are enabled:
 
-# Auth Flow
+## Auth Flow
 Register
 - Username
 - Email
@@ -12,7 +12,7 @@ Register
 Login
 Logout
 
-# Create/Edit Vibe
+## Create/Edit Vibe
 Optional form values
 - title
 - description
