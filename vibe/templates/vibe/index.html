@@ -2,7 +2,80 @@
 {% load static %}
 
 {% block body %}
-{% if vibe %}
+{% if profile %}
+<h2 class="vibe-profile-name">{{ profile.preferred_name }}</h2>
+<div class="vibe-profile">
+    <ul>
+        <li> 
+            Fans: {{ fan_count }}
+        </li>
+        <li>
+            Follows: {{ follow_count }}
+        </li>
+        {% if not self_profile %}
+            {% if not fan %}
+            <li>
+                <input class="fan-button" data-profileid={{profile.id}} data-fan={{fan}} id='fan-button' type="button" value='Become a Fan'/>
+            </li>
+            {% else %}
+            <li>
+                <input class="fan-button" data-profileid={{profile.id}} data-fan={{fan}} id='fan-button' type="button" value='Stop being a fan'/>
+            </li>
+            {% endif %}
+        {% endif %}
+    </ul>
+</div>
+{% for vibe in vibes %}
+    <div data-vibeid="{{ vibe.id }}" id="vibe-{{ vibe.id }}" class="vibe-record">
+        <a href="{% url 'vibe:vibe_details' vibe.pk %}">
+        <img id="vibe-pic-{{ vibe.id }}" class="pic" src="{{ vibe.img_url }}" alt="Image not found"</img>
+        </a>
+        <ul class="vibe-metadata">
+            <li> 
+                <a href="{% url 'vibe:profile' vibe.creator %}">{{ vibe.creator }}</a>
+            </li>
+            <li>
+                <a href="javascript:vibeForm({{ vibe.id }});">Edit</a>
+            </li>
+            <li id="vibe-record-title-{{ vibe.id }}">
+                {{ vibe.title }}
+            </li>
+            <li id="vibe-record-description-{{ vibe.id }}">
+                {{ vibe.description }}
+            </li>
+            <li id="vibe-record-location-{{ vibe.id }}">
+                {{ vibe.location }}
+            </li>
+            <li>
+                {{ vibe.date_created }}
+            </li>
+            <li>
+                <a href="javascript:vibeCheers({{ vibe.id }});">&#128151;</a>
+                <a>{{ vibe.cheers }}</a>
+            </li>
+        </ul>
+    </div>    
+{% endfor %}
+<nav aria-label="Vibe Navigation">
+    <ul class="pagination">
+        {% if vibes.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ vibes.prevous_page_number }}">
+                Previous
+            </a>
+        </li>
+        {% endif %}
+        {% if vibes.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ vibes.next_page_number }}">
+                Next
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+</div>
+{% elif vibe %}
 <h1>Vibe Details</h1>
 <li id="vibe-{{ vibe.id }}" class="vibe-record">
     <a href="{% url 'vibe:vibe_details' vibe.pk %}">
@@ -74,5 +147,8 @@
 {% endblock %}
 
 {% block script %}
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="{% static 'vibe/vibe.js' %}"></script>
 {% endblock %}

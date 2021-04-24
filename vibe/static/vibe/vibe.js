@@ -1,7 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Default vibe form
   vibeForm();
+  // Profile Fan
+  document.querySelector('#fan-button').addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    fan();
+  });
 })
+
+async function fan(){
+// Add or Remove Profile fan
+console.log('fan-button clicked')
+vibe_button = document.querySelector('#fan-button');
+await fetch(`/fan/${vibe_button.dataset.vibeid}/${vibe_button.dataset.fan}`, {
+method: 'PUT',
+}).then(response => response.json()).then(result => {console.log(result)});
+console.log(`Profile ${vibe_button.dataset.profileid} fans updated`)
+}
 
 function vibeForm(vibe_id='') {
   console.log('Create vibe form');
@@ -72,7 +88,6 @@ function vibeForm(vibe_id='') {
     form_title.placeholder = document.querySelector(`#vibe-record-title-${vibe_id}`).innerText;
     form_description.placeholder = document.querySelector(`#vibe-record-description-${vibe_id}`).innerText;
     form_location.placeholder = document.querySelector(`#vibe-record-location-${vibe_id}`).innerText;
-    // TODO Fix bug. form_img_url.placeholder set above is being returned instead of current value
     form_img_url.placeholder = document.querySelector(`#vibe-pic-${vibe_id}`).src;
     document.getElementById(`vibe-${vibe_id}`).replaceWith(vibe);
     form_button.value = 'Save';
@@ -92,7 +107,7 @@ async function updateVibe(event){
   var vibe_description = document.querySelector(`#vibe-form-description-${vibe_id}`).value;
   var vibe_location = document.querySelector(`#vibe-form-location-${vibe_id}`).value;
   var vibe_img_url = document.querySelector(`#vibe-form-img-url-${vibe_id}`).value;
-  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken').value
+  var csrftoken = document.querySelector('[name=csrfmiddlewaretoken').value
   // Get placeholders if no value provided
   if (vibe_title == '') {
     vibe_title = document.querySelector(`#vibe-form-title-${vibe_id}`).placeholder;
@@ -108,7 +123,7 @@ async function updateVibe(event){
   }
   // Mannuall passing csrf token for vibe form since not using FormModel
   console.log("Vibe being updated");
-  const request = new Request(
+  var request = new Request(
     `/vibe/${vibe_id}`,
     {headers: {'X-CSRFToken': csrftoken}}
   );
@@ -132,14 +147,14 @@ async function updateVibe(event){
 async function createVibe(){
   // Create Vibe and Refresh Page
   // vibeForm values
-  var vibe_title = document.querySelector('#vibe-form-title-id').value;
-  var vibe_description = document.querySelector('#vibe-form-description-id').value;
-  var vibe_location = document.querySelector('#vibe-form-location-id').value;
-  var vibe_img_url = document.querySelector('#vibe-form-img-url-id').value;
-  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken').value
+  var vibe_title = document.querySelector('#vibe-form-title-').value;
+  var vibe_description = document.querySelector('#vibe-form-description-').value;
+  var vibe_location = document.querySelector('#vibe-form-location-').value;
+  var vibe_img_url = document.querySelector('#vibe-form-img-url-').value;
+  var csrftoken = document.querySelector('[name=csrfmiddlewaretoken').value
   // Mannuall passing csrf token for vibe form since not using FormModel
   console.log("vibeForm values being POST'd");
-  const request = new Request(
+  request = new Request(
     '/vibe',
     {headers: {'X-CSRFToken': csrftoken}}
   );

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Vibe, Comment
+from vibe.models import User, Vibe, Comment, Profile
 
 
 class VibeUserAdmin(UserAdmin):
@@ -12,3 +12,4 @@ class VibeUserAdmin(UserAdmin):
 admin.site.register(User, VibeUserAdmin)
 admin.site.register(Vibe)
 admin.site.register(Comment)
+admin.site.register(Profile)

@@ -2,16 +2,18 @@ from datetime import datetime
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 
-from .forms import ProfileForm, VibeForm
+from vibe.forms import ProfileForm, VibeForm
 
 import json
 
-from .models import User, Vibe
+from vibe.models import User, Vibe, Profile
 
 
 def index(request):
@@ -70,10 +72,12 @@ def register(request):
             return render(request, "vibe/register.html", {
                 "message": "Passwords must match."
             })
-        # Attempt to create new user
+        # Attempt to create new user and profile
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
+            profile = Profile(preferred_name=username, user=user)
+            profile.save()
         except IntegrityError:
             return render(request, "vibe/register.html", {
                 "message": "Username already taken."
@@ -84,25 +88,8 @@ def register(request):
         return render(request, "vibe/register.html")
 
 
-def profile(request, username):
-    # Create post
-    if request.method == "POST":
-        profile_form = ProfileForm(request.POST)
-        if profile_form.is_valid() and request.user.is_authenticated:
-            print('Creating profile')
-            profile = profile_form.save(commit=False)
-            profile.creator = request.user
-            profile.save()
-            return HttpResponseRedirect(reverse("vibe:profile" + username))
-    # TODO: GET profile date
-    profile = "testprofile"
-    return render(request, "vibe/profile.html", {
-        'profile': profile,
-    })
-
-
 @requires_csrf_token
-def vibe(request, vibe_id):
+def vibe(request, vibe_id=None):
     """
     Post, Put, and Get vibes
     """
@@ -162,3 +149,74 @@ def vibe_details(request, vibe_id):
     return render(request, "vibe/index.html", {
         "vibe": vibe
         })
+
+
+def profile(request, username):
+    # Create post
+    if request.method == "POST":
+        profileForm = ProfileForm(request.POST)
+        if profileForm.is_valid() and request.user.is_authenticated:
+            print('Creating Post')
+            profile = profileForm.save(commit=False)
+            profile.author = request.user
+            profile.save()
+            return HttpResponseRedirect(reverse("vibe:index" + username))
+    # Hide Follow/Unfollow button on users own profile
+    self_profile = False
+    if request.user.username == username:
+        self_profile = True
+    # Show by all user's vibes
+    vibes = Vibe.objects.filter(
+        creator=User.objects.get(username=username)).order_by('-date_created')
+    paginator = Paginator(vibes, 1)
+    page_number = request.GET.get('page')
+    page_posts = paginator.get_page(page_number)
+    # Get clicked Profile
+    fan = False
+    fan_count = 0
+    follow_count = 0
+    try:
+        # Set profile button to Follow or Unfollow
+        profile = Profile.objects.prefetch_related(
+            'user', 'fans', 'follows').get(
+                user=User.objects.get(username=username))
+        fans = profile._prefetched_objects_cache['fans']
+        for fan in fans:
+            if fan.username == request.user.username:
+                fan = True
+                break
+        fan_count = len(profile._prefetched_objects_cache['fans'])
+        follow_count = len(profile._prefetched_objects_cache['follows'])
+    # /admin manually create profile to enable following
+    except Profile.DoesNotExist:
+        profile = {'preferred_name': 'Contact admin to create profile'}
+    return render(request, "vibe/index.html", {
+        'profile': profile,
+        'vibes': vibes,
+        'self_profile': self_profile,
+        'fan': fan,
+        'fan_count': fan_count,
+        'follow_count': follow_count
+    })
+
+
+@csrf_exempt
+@login_required
+def fan(request, profileid, fan):
+    """
+    Update Profile's fan
+    """
+    print(f"Profile {profileid} has fan {request.user} {fan}")
+    profile = Profile.objects.prefetch_related(
+        'fan', 'follows').get(pk=profileid)
+    if fan == 'True':
+        profile.fan.remove(User.objects.get(
+            username=request.user.username))
+        print("removed profile fan")
+    elif fan == 'False':
+        profile.fan.add(User.objects.get(
+            username=request.user.username))
+        print("added profile fan")
+    else:
+        print("something went wrong")
+    return HttpResponseRedirect(reverse("vibe:index"))

@@ -8,7 +8,7 @@ from vibe.models import Profile, Vibe
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['fans', 'follows']
+        fields = ['user', 'preferred_name']
 
 
 class VibeForm(ModelForm):
