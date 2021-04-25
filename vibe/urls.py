@@ -11,6 +11,9 @@ urlpatterns = [
     path("profile/<str:username>", views.profile, name="profile"),
     path("vibe", views.vibe, name="vibe"),
     path("vibe/<str:vibe_id>", views.vibe, name="vibe"),
-    path("vibe_details/<str:vibe_id>", views.vibe_details, name="vibe_details"),
+    path("vibe_details/<str:vibe_id>",
+         views.vibe_details,
+         name="vibe_details"),
     path("cheers/<str:vibe_id>", views.cheers, name="cheers"),
+    path("comments/<int:vibe_id>/", views.comments, name="comments"),
 ]

@@ -9,11 +9,11 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 
-from vibe.forms import ProfileForm, VibeForm
+from vibe.forms import ProfileForm, VibeForm, CommentForm
 
 import json
 
-from vibe.models import User, Vibe, Profile
+from vibe.models import User, Vibe, Profile, Comment
 
 
 def index(request):
@@ -116,13 +116,14 @@ def vibe(request, vibe_id=None):
             })
     elif request.method == "PUT":
         if request.user.is_authenticated:
-            print('Updating vibe')
             body = json.loads(request.body.decode('utf-8'))
             vibe = Vibe.objects.prefetch_related('creator').get(pk=vibe_id)
             # Can only update vibes created
             if vibe.creator.username != request.user.username:
-                print("Unauthorized editing was prevented")
-                return HttpResponse(f"Must login as {vibe.creator} to update vibe {vibe_id}", status=401)
+                return HttpResponse(
+                    f"Login as {vibe.creator} to update vibe {vibe_id}",
+                    status=401,
+                )
             vibe.title = body['title']
             vibe.description = body['description']
             vibe.location = body['location']
@@ -142,8 +143,14 @@ def vibe(request, vibe_id=None):
     else:
         if request.user.is_authenticated:
             vibe = Vibe.objects.get(pk=vibe_id)
+            commentform = CommentForm()
+            vibe_comments = Comment.objects \
+                .prefetch_related('vibe') \
+                .filter(vibe_id=vibe_id)
             return render(request, "vibe/index.html", {
-                'vibe': vibe
+                'vibe': vibe,
+                'vibe_comments': vibe_comments,
+                'commentform': commentform,
             })
         else:
             return render(request, "vibe/login.html", {
@@ -264,3 +271,28 @@ def cheers(request, vibe_id):
             print(f"User cheers vibe {vibe_id}")
         vibe.save()
         return HttpResponse(status=200)
+
+
+def comments(request, vibe_id):
+    """
+    Create vibe comment.
+    """
+    if request.method == "POST":
+        vibe = Vibe.objects.get(pk=vibe_id)
+        commentform = CommentForm(request.POST)
+        # Require user authentication
+        if commentform.is_valid() and request.user.is_authenticated:
+            # Save listing comment
+            comment = commentform.save(commit=False)
+            comment.vibe_id = vibe.pk
+            comment.member = request.user
+            comment.comment_date = datetime.now()
+            comment.save()
+            return HttpResponseRedirect(reverse(
+                "vibe:vibe",
+                kwargs={'vibe_id': vibe_id},
+                ))
+        else:
+            return render(request, "vibe/login.html", {
+                "message": "Must login to comment on vibe."
+            })

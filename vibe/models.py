@@ -50,7 +50,7 @@ class Comment(models.Model):
     vibe = models.ForeignKey(
         Vibe,
         on_delete=models.CASCADE,
-        db_column='listing_id',
+        db_column='vibe_id',
         blank=True,
         null=True)
     comment = models.CharField(max_length=180)
@@ -59,3 +59,6 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         db_column='member')
     comment_date = models.DateTimeField(auto_created=True)
+
+    def __str__(self):
+        return f'{self.comment} by {self.member}'

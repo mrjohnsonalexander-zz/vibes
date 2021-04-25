@@ -2,7 +2,7 @@
 Vibe is an online community platform for listing and reviewing shared experiences; the canary launch of this platform is targeted for USA WA State adults over 18 years, and ~75% of the 7.5 million WA Residence are over 18. A vibe is a feeling inspired by a shared personal experience, members post vibes offered to our community, and transparently share reviews of vibes experienced. 
 
 # Background
-This is a Python, Javascript, HTML, and CSS only application; created as a course final project using Django. Djangon vibesite project has as a single vibe app.
+This is a Python, Javascript, HTML, and CSS only application; created as a course final project using Django, and vibesite project has as a single vibe app.
 
 For testing I created the following users:
 admin, firstadopter, secondadopter, thirdadopter, forthadopter, and fifthadopter.
@@ -13,13 +13,14 @@ The following capabilities are enabled:
 - Can view all community created vibes sorted by date on index page.
 - Can click any vibe creator's username to view their profile
 - Can click any vibe image to view detail view.
+- Can view all vibe comments on detail view.
+- Can Add Comments to vibe details.
 - Can toggle cheers to vibes.
 - Profile shows Fan/Follow Counts, and "Become a Fan" or "Stop Being a fan" button when viewing profiles that are not the current user.
 
 # Next things todo:
-- Enable users to comment on vibes.
-- Enable users toggling being a fan of a profile.
 - Enable autoscolling of Vibes on main page
+- Enable users toggling being a fan of a profile.
 - Enable sending/replying/archiving direct messages
 - Enable searching vibes that are sorted by date.
 - Enable users to post reviews of vibes (more detail than a comment)
