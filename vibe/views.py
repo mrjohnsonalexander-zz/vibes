@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
@@ -118,7 +118,11 @@ def vibe(request, vibe_id=None):
         if request.user.is_authenticated:
             print('Updating vibe')
             body = json.loads(request.body.decode('utf-8'))
-            vibe = Vibe.objects.get(pk=vibe_id)
+            vibe = Vibe.objects.prefetch_related('creator').get(pk=vibe_id)
+            # Can only update vibes created
+            if vibe.creator.username != request.user.username:
+                print("Unauthorized editing was prevented")
+                return HttpResponse(f"Must login as {vibe.creator} to update vibe {vibe_id}", status=401)
             vibe.title = body['title']
             vibe.description = body['description']
             vibe.location = body['location']
@@ -137,7 +141,10 @@ def vibe(request, vibe_id=None):
     # Assume GET request
     else:
         if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse("vibe:index"))
+            vibe = Vibe.objects.get(pk=vibe_id)
+            return render(request, "vibe/index.html", {
+                'vibe': vibe
+            })
         else:
             return render(request, "vibe/login.html", {
                 "message": "Must login to post."
@@ -145,10 +152,18 @@ def vibe(request, vibe_id=None):
 
 
 def vibe_details(request, vibe_id):
-    vibe = Vibe.object.get(pk=vibe_id)
-    return render(request, "vibe/index.html", {
-        "vibe": vibe
-        })
+    vibe = Vibe.objects.prefetch_related('creator').get(pk=vibe_id)
+    vibe_json = {
+        'id': vibe.pk,
+        'title': vibe.title,
+        'description': vibe.description,
+        'location': vibe.location,
+        'creator': vibe.creator.username,
+        'cheers': vibe.cheers,
+        'date_created': vibe.date_created.strftime("%B %d,%Y, %I:%M %p"),
+        'img_url': vibe.img_url,
+    }
+    return JsonResponse(vibe_json, safe=False)
 
 
 def profile(request, username):
@@ -220,3 +235,32 @@ def fan(request, profileid, fan):
     else:
         print("something went wrong")
     return HttpResponseRedirect(reverse("vibe:index"))
+
+
+@csrf_exempt
+@login_required
+def cheers(request, vibe_id):
+    # Update vibe cheer users
+    # Get current user's that cheered the vibe
+    if request.method == "PUT":
+        vibe = Vibe.objects.prefetch_related('user_cheers').get(pk=vibe_id)
+        user_cheers = vibe._prefetched_objects_cache['user_cheers']
+        # Add or Remove post like user
+        user_cheers_vibe = False
+        for user in user_cheers:
+            if request.user == user:
+                user_cheers_vibe = True
+        if user_cheers_vibe:
+            # add vibe.user_cheers and 1 vibe cheer
+            vibe.user_cheers.remove(User.objects.get(
+                username=request.user.username))
+            vibe.cheers = vibe.cheers - 1
+            print(f"User stopped cheering vibe {vibe_id}")
+        else:
+            # remove vibe.user_cheers and -1 from vibe.cheers
+            vibe.user_cheers.add(User.objects.get(
+                username=request.user.username))
+            vibe.cheers = vibe.cheers + 1
+            print(f"User cheers vibe {vibe_id}")
+        vibe.save()
+        return HttpResponse(status=200)

@@ -20,6 +20,7 @@ console.log(`Profile ${vibe_button.dataset.profileid} fans updated`)
 }
 
 function vibeForm(vibe_id='') {
+  // Vibe form with placeholders
   console.log('Create vibe form');
   vibe = document.createElement('div');
   vibe.dataset.vibeid = vibe_id;
@@ -136,12 +137,89 @@ async function updateVibe(event){
           img_url: vibe_img_url,
       })
   }).then(response => {
+        // Update vibe without reload and log errors
         if (response.status == 200) {
-            location.reload()
+          vibeRecord(vibe_id);
         } else {
           console.log(response);
+          vibeRecord(vibe_id);
         }
       })
+}
+
+async function vibeRecord(vibe_id) {
+  // Get vibe data, replace vibe form with record
+  await fetch(`/vibe_details/${vibe_id}`, {
+      method: 'GET',
+     }).then(response => response.json()).then(result => {
+          // Create vibe record
+          vibe_r = document.createElement('div');
+          vibe_r.dataset.vibeid = vibe_id;
+          vibe_r.id = `vibe-${vibe_id}`;
+          vibe_r.classList.add('vibe-record');
+          // record Pic
+          vibe_r.append(document.createElement('a'));
+          pic = vibe_r.firstElementChild;
+          pic.href = `/vibe/${vibe_id}`
+          pic.append(document.createElement('img'));
+          img = pic.firstElementChild;
+          img.id = `vibe-pic-${vibe_id}`
+          img.classList.add("pic");
+          img.src = result.img_url;
+          img.alt = "Image not found";
+          // record metadata
+          vibe_r.append(document.createElement('ul'));
+          ul = vibe_r.lastElementChild;
+          ul.classList.add("vibe-metadata");
+          // Link to vibe creator's profile
+          ul.append(document.createElement('li'));
+          profile = ul.firstElementChild;
+          profile.id = `vibe-record-creator-${result.id}`;
+          profile.append(document.createElement('a'));
+          profile_attr = profile.firstElementChild;
+          profile_attr.href = `/profile/${result.creator}`;
+          profile_attr.innerHTML = result.creator;
+          // vibeForm replaces record for editing
+          ul.append(document.createElement('li'));
+          edit = ul.lastElementChild;
+          edit.append(document.createElement('a'));
+          edit_attr = edit.lastElementChild;
+          edit_attr.href = `javascript:vibeForm(${result.id});`;
+          edit_attr.innerHTML = 'Edit';
+          // record title
+          ul.append(document.createElement('li'));
+          title = ul.lastElementChild;
+          title.id = `vibe-record-title-${vibe_id}`;
+          title.innerHTML = result.title;
+          // record description
+          ul.append(document.createElement('li'));
+          description = ul.lastElementChild;
+          description.id = `vibe-record-description-${vibe_id}`;
+          description.innerHTML = result.description;
+          // record location
+          ul.append(document.createElement('li'));
+          loc = ul.lastElementChild;
+          loc.id = `vibe-record-location-${vibe_id}`;
+          loc.innerHTML = result.location;
+          // record date_created
+          ul.append(document.createElement('li'));
+          date_created = ul.lastElementChild;
+          date_created.id = `vibe-record-date-${vibe_id}`;
+          date_created.innerHTML = result.date_created;
+          // record cheers
+          ul.append(document.createElement('li'));
+          cheers = ul.lastElementChild;
+          cheers.append(document.createElement('a'));
+          cheers_emoji = cheers.lastElementChild;
+          cheers_emoji.href = `javascript:vibeCheers(${vibe_id});`;
+          cheers_emoji.innerHTML = "&#127867;";
+          cheers.append(document.createElement('a'));
+          cheers_count = cheers.lastElementChild;
+          cheers_count.innerHTML = result.cheers;
+          // Replace vibeForm with vibe Record
+          console.log("replacing div")
+          document.getElementById(`vibe-${vibe_id}`).replaceWith(vibe_r);
+      });
 }
 
 async function createVibe(){
@@ -173,6 +251,16 @@ async function createVibe(){
           console.log(response);
         }
       })
+}
+
+async function vibeCheers(vibe_id){
+  // Heart Emjoi will add/remove like for current user
+  console.log(`Updating vibe ${vibe_id} cheers`);
+  await fetch(`/cheers/${vibe_id}`, {
+      method: 'PUT',
+  }).then(response => {console.log(response)});
+  // Update HTML with vibe.cheers
+  vibeRecord(vibe_id);
 }
 
 // This function comes from:

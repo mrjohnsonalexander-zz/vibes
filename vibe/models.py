@@ -53,7 +53,7 @@ class Comment(models.Model):
         db_column='listing_id',
         blank=True,
         null=True)
-    comment = models.TextField()
+    comment = models.CharField(max_length=180)
     member = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

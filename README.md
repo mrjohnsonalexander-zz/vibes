@@ -8,26 +8,27 @@ For testing I created the following users:
 admin, firstadopter, secondadopter, thirdadopter, forthadopter, and fifthadopter.
 
 The following capabilities are enabled:
-- Can register as a vibe user with username being default profile preferred name.
-- Can create/edit a vibe.
+- Can register with username being default profile preferred name.
+- Can create/edit a vibe but can not edit vibe's user didn't create.
 - Can view all community created vibes sorted by date on index page.
-- Can click any username to view their profile
-- Profile shows vibes created by that member, Fan/Follow Counts, and "Become a Fan" or "Stop Being a fan" button when viewing profiles that are not the current user.
+- Can click any vibe creator's username to view their profile
+- Can click any vibe image to view detail view.
+- Can toggle cheers to vibes.
+- Profile shows Fan/Follow Counts, and "Become a Fan" or "Stop Being a fan" button when viewing profiles that are not the current user.
 
 # Next things todo:
-- Enable users to toggle cheers to vibes.
 - Enable users to comment on vibes.
-- Enable searching vibes that are sorted by date.
-- Enable users to post reviews of vibes (more detail than a comment)
 - Enable users toggling being a fan of a profile.
-- Enable profiles to list all: vibes/reviews posted, and profiles that are a fan of.
 - Enable autoscolling of Vibes on main page
 - Enable sending/replying/archiving direct messages
+- Enable searching vibes that are sorted by date.
+- Enable users to post reviews of vibes (more detail than a comment)
+- Enable profiles to list all: vibes/reviews posted, and profiles that are a fan of.
 
 
 # Future Development
 Research Payments, Push notifications, Emails, Calander, Map, Facebook/Google Auth, Mobile App; flush out account types like: 
-- Enable Basic capabilities limiting: Limited to 1 Vibe per use, limit 1 uploaded and 1 url images, can initiate by sending 1 message per day, reply to any message, post upto 10 comments per month.
+- Enable Basic capabilities limiting: Limited to 1 Vibe per user, limit 1 uploaded and 1 url images, can comment upto 3 times per day, can reply to any message, but can not initiate any direct message.
 - Enable Premium capabilities: Upto 5 vibes posted at a time, unlimited comments and messages, additional profile images.
 
 # Assumptions:
@@ -36,4 +37,5 @@ Research Payments, Push notifications, Emails, Calander, Map, Facebook/Google Au
 
 # Things to fix:
 - Location and URL should be optional; currently errors when placeholders not replaced with values.
-- Should not be able to edit vibe's the user didn't create and can.
+- JS error: "AddEventListener of null" due because profile Fan toggle element missing when viewing vibes.
+- JS error: "replceWith of null" occurs when viewing profiles dur to Form element missing.

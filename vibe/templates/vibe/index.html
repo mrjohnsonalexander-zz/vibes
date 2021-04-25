@@ -2,7 +2,38 @@
 {% load static %}
 
 {% block body %}
-{% if profile %}
+{% if vibe %}
+<h1>Vibe Details</h1>
+<li id="vibe-{{ vibe.id }}" class="vibe-record">
+    <a href="{% url 'vibe:vibe' vibe.pk %}">
+    <img class="pic" src="{{ vibe.img_url }}" alt="Image not found"</img>
+    </a>
+    <ul class="vibe-metadata">
+        <li> 
+            <a href="{% url 'vibe:profile' vibe.creator %}">{{ vibe.creator }}</a>
+        </li>
+        <li>
+            <a href="javascript:vibeForm({{ vibe.id }});">Edit</a>
+        </li>
+        <li id="vibe-record-title-{{ vibe.id }}">
+            {{ vibe.title }}
+        </li>
+        <li id="vibe-record-description-{{ vibe.id }}">
+            {{ vibe.description }}
+        </li>
+        <li id="vibe-record-location-{{ vibe.id }}">
+            {{ vibe.location }}
+        </li>
+        <li id="vibe-record-date-{{ vibe.id }}"></li>>
+            {{ vibe.date_created }}
+        </li>
+        <li>
+            <a href="javascript:vibeCheers({{ vibe.id }});">&#127867;</a>
+            <a>{{ vibe.cheers }}</a>
+        </li>
+    </ul>
+</li>  
+{% elif profile %}
 <h2 class="vibe-profile-name">{{ profile.preferred_name }}</h2>
 <div class="vibe-profile">
     <ul>
@@ -25,13 +56,19 @@
         {% endif %}
     </ul>
 </div>
+{% else %}
+<h3>Community Vibes!</h3>
+<div id="vibe">
+</div>
+<div id="community-vibes">
+
 {% for vibe in vibes %}
     <div data-vibeid="{{ vibe.id }}" id="vibe-{{ vibe.id }}" class="vibe-record">
-        <a href="{% url 'vibe:vibe_details' vibe.pk %}">
+        <a href="{% url 'vibe:vibe' vibe.pk %}">
         <img id="vibe-pic-{{ vibe.id }}" class="pic" src="{{ vibe.img_url }}" alt="Image not found"</img>
         </a>
         <ul class="vibe-metadata">
-            <li> 
+            <li id="vibe-record-creator-{{ vibe.id }}"> 
                 <a href="{% url 'vibe:profile' vibe.creator %}">{{ vibe.creator }}</a>
             </li>
             <li>
@@ -50,7 +87,7 @@
                 {{ vibe.date_created }}
             </li>
             <li>
-                <a href="javascript:vibeCheers({{ vibe.id }});">&#128151;</a>
+                <a href="javascript:vibeCheers({{ vibe.id }});">&#127867;</a>
                 <a>{{ vibe.cheers }}</a>
             </li>
         </ul>
@@ -74,75 +111,6 @@
         {% endif %}
     </ul>
 </nav>
-</div>
-{% elif vibe %}
-<h1>Vibe Details</h1>
-<li id="vibe-{{ vibe.id }}" class="vibe-record">
-    <a href="{% url 'vibe:vibe_details' vibe.pk %}">
-    <img class="pic" src="{{ vibe.img_url }}" alt="Image not found"</img>
-    </a>
-    <ul class="vibe-metadata">
-        <li> 
-            <a href="{% url 'vibe:profile' vibe.creator %}">{{ vibe.creator }}</a>
-        </li>
-        <li>
-            <a href="javascript:vibeForm({{ vibe.id }});">Edit</a>
-        </li>
-        <li id="vibe-record-title-{{ vibe.id }}">
-            {{ vibe.title }}
-        </li>
-        <li id="vibe-record-description-{{ vibe.id }}">
-            {{ vibe.description }}
-        </li>
-        <li id="vibe-record-location-{{ vibe.id }}">
-            {{ vibe.location }}
-        </li>
-        <li>
-            {{ vibe.date_created }}
-        </li>
-        <li>
-            <a href="javascript:vibeCheers({{ vibe.id }});">&#128151;</a>
-            <a>{{ vibe.cheers }}</a>
-        </li>
-    </ul>
-</li>  
-{% else %}
-<h1>Community Vibes!</h1>
-<div id="vibe">
-</div>
-<div id="community-vibes">
-    {% for vibe in vibes %}
-    <div data-vibeid="{{ vibe.id }}" id="vibe-{{ vibe.id }}" class="vibe-record">
-        <a href="{% url 'vibe:vibe_details' vibe.pk %}">
-        <img id="vibe-pic-{{ vibe.id }}" class="pic" src="{{ vibe.img_url }}" alt="Image not found"</img>
-        </a>
-        <ul class="vibe-metadata">
-            <li> 
-                <a href="{% url 'vibe:profile' vibe.creator %}">{{ vibe.creator }}</a>
-            </li>
-            <li>
-                <a href="javascript:vibeForm({{ vibe.id }});">Edit</a>
-            </li>
-            <li id="vibe-record-title-{{ vibe.id }}">
-                {{ vibe.title }}
-            </li>
-            <li id="vibe-record-description-{{ vibe.id }}">
-                {{ vibe.description }}
-            </li>
-            <li id="vibe-record-location-{{ vibe.id }}">
-                {{ vibe.location }}
-            </li>
-            <li>
-                {{ vibe.date_created }}
-            </li>
-            <li>
-                <a href="javascript:vibeCheers({{ vibe.id }});">&#128151;</a>
-                <a>{{ vibe.cheers }}</a>
-            </li>
-        </ul>
-    </div>    
-    {% endfor %}
-</div>
 {% endif %}
 {% endblock %}
 
