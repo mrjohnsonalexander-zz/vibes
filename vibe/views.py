@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.core import serializers
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
@@ -19,10 +20,14 @@ from vibe.models import User, Vibe, Profile, Comment
 def index(request):
     # Authenticated users view vibes
     if request.user.is_authenticated:
-        print('Getting vibe')
+        print('Getting vibes')
         vibes = Vibe.objects.all().order_by('-date_created')
+        # Paginator
+        paginator = Paginator(vibes, 10)
+        page_number = request.GET.get('page')
+        page_vibes = paginator.get_page(page_number)
         return render(request, "vibe/index.html", {
-            'vibes': vibes
+            'vibes': page_vibes
         })
     # Everyone else is prompted to sign in
     else:
@@ -91,7 +96,7 @@ def register(request):
 @requires_csrf_token
 def vibe(request, vibe_id=None):
     """
-    Post, Put, and Get vibes
+    Post, Put, and Get a vibe.
     """
     print("Vibing")
     if request.method == "POST":
@@ -156,6 +161,30 @@ def vibe(request, vibe_id=None):
             return render(request, "vibe/login.html", {
                 "message": "Must login to post."
             })
+
+
+def vibes(request):
+    # Authenticated users view vibes
+    if request.user.is_authenticated:
+        vibes = Vibe.objects.prefetch_related('creator').all().order_by('-date_created')
+        # Paginator
+        paginator = Paginator(vibes, 10)
+        page_number = request.GET.get('page')
+        page_vibes = paginator.get_page(page_number)
+        vibes_json = {}
+        for i in range(len(page_vibes)):
+            vibes_json[i] = {
+                'id': page_vibes[i].id,
+                'title': page_vibes[i].title,
+                'description': page_vibes[i].description,
+                'location': page_vibes[i].location,
+                'creator': page_vibes[i].creator.username,
+                'cheers': page_vibes[i].cheers,
+                'date_created': page_vibes[i].date_created.strftime("%B %d,%Y, %I:%M %p"),
+                'img_url': page_vibes[i].img_url,
+            }
+        return JsonResponse(vibes_json, safe=False)
+
 
 
 def vibe_details(request, vibe_id):

@@ -17,9 +17,9 @@ The following capabilities are enabled:
 - Can Add Comments to vibe details.
 - Can toggle cheers to vibes.
 - Profile shows Fan/Follow Counts, and "Become a Fan" or "Stop Being a fan" button when viewing profiles that are not the current user.
+- Can autoscolling of Vibes on main page
 
 # Next things todo:
-- Enable autoscolling of Vibes on main page
 - Enable users toggling being a fan of a profile.
 - Enable sending/replying/archiving direct messages
 - Enable searching vibes that are sorted by date.

@@ -10,6 +10,7 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("profile/<str:username>", views.profile, name="profile"),
     path("vibe", views.vibe, name="vibe"),
+    path("vibes", views.vibes, name="vibes"),
     path("vibe/<str:vibe_id>", views.vibe, name="vibe"),
     path("vibe_details/<str:vibe_id>",
          views.vibe_details,

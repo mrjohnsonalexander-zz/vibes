@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Default vibe form
   vibeForm();
+  // Default load vibes
+  load_vibes();
   // Profile Fan
   document.querySelector('#fan-button').addEventListener('click', (event) => {
     event.preventDefault();
@@ -9,14 +11,119 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })
 
+// Continuous vibe scroll
+let counter = 1;
+// Paginator(vibes, 10) is returned from views.py 
+const vibe_batch_count = 10;
+let vibes_loaded = false;
+window.onscroll = () => {
+  if (window.screen.height + window.scrollY >= document.body.offsetHeight) {
+    if(!vibes_loaded) {
+      // load_vibes updates vibes_loaded to false when complete
+      vibes_loaded = true;
+      load_vibes();
+    }
+  }
+}
+
+async function load_vibes(){
+  // Client batch
+  var start = counter;
+  const end = start + vibe_batch_count -1;
+  // Get page of vibe records
+  
+  await fetch(`/vibes?page=${end / 10}`, {
+    method: 'GET',
+  }).then(resp => resp.json()).then(vibes => {
+    for (i = 0; i < 10; i++) {
+      // add page of vibe records to UI
+      vibe = vibes[i];
+      add_vibeRecord(vibe);
+    }
+    counter = end + 1;
+  })
+  // Enable next firing
+  vibes_loaded = false;
+}
+
+function add_vibeRecord(vibe) {
+  // Adding vibe record
+  vibe_r = document.createElement('div');
+  vibe_r.dataset.vibeid = vibe.id;
+  vibe_r.id = `vibe-${vibe.id}`;
+  vibe_r.classList.add('vibe-record');
+  // record Pic
+  vibe_r.append(document.createElement('a'));
+  pic = vibe_r.firstElementChild;
+  pic.href = `/vibe/${vibe.id}`
+  pic.append(document.createElement('img'));
+  img = pic.firstElementChild;
+  img.id = `vibe-pic-${vibe.id}`
+  img.classList.add("pic");
+  img.src = vibe.img_url;
+  img.alt = "Image not found";
+  // record metadata
+  vibe_r.append(document.createElement('ul'));
+  ul = vibe_r.lastElementChild;
+  ul.classList.add("vibe-metadata");
+  // Link to vibe creator's profile
+  ul.append(document.createElement('li'));
+  profile = ul.firstElementChild;
+  profile.id = `vibe-record-creator-${vibe.id}`;
+  profile.append(document.createElement('a'));
+  profile_attr = profile.firstElementChild;
+  profile_attr.href = `/profile/${vibe.creator}`;
+  profile_attr.innerHTML = vibe.creator;
+  // vibeForm replaces record for editing
+  ul.append(document.createElement('li'));
+  edit = ul.lastElementChild;
+  edit.append(document.createElement('a'));
+  edit_attr = edit.lastElementChild;
+  edit_attr.href = `javascript:vibeForm(${vibe.id});`;
+  edit_attr.innerHTML = 'Edit';
+  // record title
+  ul.append(document.createElement('li'));
+  title = ul.lastElementChild;
+  title.id = `vibe-record-title-${vibe.id}`;
+  title.innerHTML = vibe.title;
+  // record description
+  ul.append(document.createElement('li'));
+  description = ul.lastElementChild;
+  description.id = `vibe-record-description-${vibe.id}`;
+  description.innerHTML = vibe.description;
+  // record location
+  ul.append(document.createElement('li'));
+  loc = ul.lastElementChild;
+  loc.id = `vibe-record-location-${vibe.id}`;
+  loc.innerHTML = vibe.location;
+  // record date_created
+  ul.append(document.createElement('li'));
+  date_created = ul.lastElementChild;
+  date_created.id = `vibe-record-date-${vibe.id}`;
+  date_created.innerHTML = vibe.date_created;
+  // record cheers
+  ul.append(document.createElement('li'));
+  cheers = ul.lastElementChild;
+  cheers.append(document.createElement('a'));
+  cheers_emoji = cheers.lastElementChild;
+  cheers_emoji.href = `javascript:vibeCheers(${vibe.id});`;
+  cheers_emoji.innerHTML = "&#127867;";
+  cheers.append(document.createElement('a'));
+  cheers_count = cheers.lastElementChild;
+  cheers_count.innerHTML = vibe.cheers;
+  // Add vibe record
+  console.log(`adding vibe ${vibe.id} record`);
+  document.querySelector('#vibes').append(vibe_r);
+}
+
 async function fan(){
 // Add or Remove Profile fan
 console.log('fan-button clicked')
 vibe_button = document.querySelector('#fan-button');
 await fetch(`/fan/${vibe_button.dataset.vibeid}/${vibe_button.dataset.fan}`, {
-method: 'PUT',
-}).then(response => response.json()).then(result => {console.log(result)});
-console.log(`Profile ${vibe_button.dataset.profileid} fans updated`)
+    method: 'PUT',
+  }).then(response => response.json()).then(result => {console.log(result)});
+  console.log(`Profile ${vibe_button.dataset.profileid} fans updated`)
 }
 
 function vibeForm(vibe_id='') {

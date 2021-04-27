@@ -75,59 +75,11 @@
     </ul>
 </div>
 {% else %}
-<h3>Community Vibes!</h3>
 <div id="vibe">
 </div>
-<div id="community-vibes">
-{% for vibe in vibes %}
-    <div data-vibeid="{{ vibe.id }}" id="vibe-{{ vibe.id }}" class="vibe-record">
-        <a href="{% url 'vibe:vibe' vibe.pk %}">
-        <img id="vibe-pic-{{ vibe.id }}" class="pic" src="{{ vibe.img_url }}" alt="Image not found"</img>
-        </a>
-        <ul class="vibe-metadata">
-            <li id="vibe-record-creator-{{ vibe.id }}"> 
-                <a href="{% url 'vibe:profile' vibe.creator %}">{{ vibe.creator }}</a>
-            </li>
-            <li>
-                <a href="javascript:vibeForm({{ vibe.id }});">Edit</a>
-            </li>
-            <li id="vibe-record-title-{{ vibe.id }}">
-                {{ vibe.title }}
-            </li>
-            <li id="vibe-record-description-{{ vibe.id }}">
-                {{ vibe.description }}
-            </li>
-            <li id="vibe-record-location-{{ vibe.id }}">
-                {{ vibe.location }}
-            </li>
-            <li>
-                {{ vibe.date_created }}
-            </li>
-            <li>
-                <a href="javascript:vibeCheers({{ vibe.id }});">&#127867;</a>
-                <a>{{ vibe.cheers }}</a>
-            </li>
-        </ul>
-    </div>    
-{% endfor %}
-<nav aria-label="Vibe Navigation">
-    <ul class="pagination">
-        {% if vibes.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ vibes.prevous_page_number }}">
-                Previous
-            </a>
-        </li>
-        {% endif %}
-        {% if vibes.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ vibes.next_page_number }}">
-                Next
-            </a>
-        </li>
-        {% endif %}
-    </ul>
-</nav>
+<h3>Community Vibes!</h3>
+<div id="vibes">
+</div>
 {% endif %}
 {% endblock %}
 
