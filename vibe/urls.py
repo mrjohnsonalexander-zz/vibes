@@ -17,4 +17,5 @@ urlpatterns = [
          name="vibe_details"),
     path("cheers/<str:vibe_id>", views.cheers, name="cheers"),
     path("comments/<int:vibe_id>/", views.comments, name="comments"),
+    path("fan/<int:profileid>/<str:fan>", views.fan, name="fan"),
 ]

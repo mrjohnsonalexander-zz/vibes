@@ -238,7 +238,7 @@ def profile(request, username):
                 break
         fan_count = len(profile._prefetched_objects_cache['fans'])
         follow_count = len(profile._prefetched_objects_cache['follows'])
-    # /admin manually create profile to enable following
+    # /admin can manually create profile
     except Profile.DoesNotExist:
         profile = {'preferred_name': 'Contact admin to create profile'}
     return render(request, "vibe/index.html", {
@@ -259,17 +259,19 @@ def fan(request, profileid, fan):
     """
     print(f"Profile {profileid} has fan {request.user} {fan}")
     profile = Profile.objects.prefetch_related(
-        'fan', 'follows').get(pk=profileid)
+        'fans', 'follows').get(pk=profileid)
     if fan == 'True':
-        profile.fan.remove(User.objects.get(
+        profile.fans.remove(User.objects.get(
             username=request.user.username))
         print("removed profile fan")
     elif fan == 'False':
-        profile.fan.add(User.objects.get(
+        profile.fans.add(User.objects.get(
             username=request.user.username))
         print("added profile fan")
     else:
         print("something went wrong")
+    profile = Profile.objects.prefetch_related('user').get(pk=profileid)
+    #return HttpResponseRedirect(reverse("vibe:profile" + '/' + profile.user.username))
     return HttpResponseRedirect(reverse("vibe:index"))
 
 

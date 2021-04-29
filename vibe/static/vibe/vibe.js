@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Default vibe form
-  vibeForm();
-  // Default load vibes
-  load_vibes();
   // Profile Fan
   document.querySelector('#fan-button').addEventListener('click', (event) => {
     event.preventDefault();
     event.stopPropagation();
     fan();
   });
+  // Default vibe form
+  vibeForm();
+  // Default load vibes
+  load_vibes();
 })
 
 // Continuous vibe scroll
@@ -117,11 +117,10 @@ function add_vibeRecord(vibe) {
 }
 
 async function fan(){
-// Add or Remove Profile fan
-console.log('fan-button clicked')
-vibe_button = document.querySelector('#fan-button');
-await fetch(`/fan/${vibe_button.dataset.vibeid}/${vibe_button.dataset.fan}`, {
-    method: 'PUT',
+  // Add or Remove Profile fan
+  vibe_button = document.querySelector('#fan-button');
+  await fetch(`/fan/${vibe_button.dataset.profileid}/${vibe_button.dataset.fan}`, {
+      method: 'PUT',
   }).then(response => response.json()).then(result => {console.log(result)});
   console.log(`Profile ${vibe_button.dataset.profileid} fans updated`)
 }

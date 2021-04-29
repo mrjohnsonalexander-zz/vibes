@@ -18,9 +18,9 @@ The following capabilities are enabled:
 - Can toggle cheers to vibes.
 - Profile shows Fan/Follow Counts, and "Become a Fan" or "Stop Being a fan" button when viewing profiles that are not the current user.
 - Can autoscolling of Vibes on main page
+- Can toggle being a fan of a profile
 
 # Next things todo:
-- Enable users toggling being a fan of a profile.
 - Enable sending/replying/archiving direct messages
 - Enable searching vibes that are sorted by date.
 - Enable users to post reviews of vibes (more detail than a comment)
@@ -40,3 +40,4 @@ Research Payments, Push notifications, Emails, Calander, Map, Facebook/Google Au
 - Location and URL should be optional; currently errors when placeholders not replaced with values.
 - JS error: "AddEventListener of null" due because profile Fan toggle element missing when viewing vibes.
 - JS error: "replceWith of null" occurs when viewing profiles dur to Form element missing.
+- JS error: 403 Forbidden when clicking "become a fan" - refresh screen shows correct count.
