@@ -49,3 +49,39 @@
 .vibe-comment {
     list-style: none;
 }
+
+.message {
+    display: inline-block;
+    margin: 0%;
+    width: 100%;
+    border: 2px solid black;
+    max-height: 50px;
+    align-items: center;
+}
+
+
+.sender {
+    float: left;
+    padding: 5px;
+    text-align: center;
+}
+
+.subject {
+    float: left;
+    padding: 10px;
+    text-align: center;
+}
+
+.timestamp {
+    float: right;
+    padding: 5px;
+    text-align: center;
+}
+
+[data-read=true] {
+    background-color: gray;
+}
+
+[data-read=false] {
+    background-color: white;
+}

@@ -18,4 +18,7 @@ urlpatterns = [
     path("cheers/<str:vibe_id>", views.cheers, name="cheers"),
     path("comments/<int:vibe_id>/", views.comments, name="comments"),
     path("fan/<int:profileid>/<str:fan>", views.fan, name="fan"),
+    path("message/<int:message_id>", views.message, name="message"),
+    path("messages/<str:box>", views.messages, name="messages"),
+    path("message", views.compose, name="compose"),
 ]

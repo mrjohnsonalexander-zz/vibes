@@ -14,7 +14,7 @@ from vibe.forms import ProfileForm, VibeForm, CommentForm
 
 import json
 
-from vibe.models import User, Vibe, Profile, Comment
+from vibe.models import User, Vibe, Profile, Comment, Message
 
 
 def index(request):
@@ -245,6 +245,7 @@ def profile(request, username):
         'profile': profile,
         'vibes': vibes,
         'self_profile': self_profile,
+        'show_profile': True,
         'fan': fan,
         'fan_count': fan_count,
         'follow_count': follow_count
@@ -327,3 +328,119 @@ def comments(request, vibe_id):
             return render(request, "vibe/login.html", {
                 "message": "Must login to comment on vibe."
             })
+
+
+@login_required
+def messages(request, box):
+    # Get current users profile
+    profile = Profile.objects.get(user=request.user)
+    # Filter message returned based on box
+    if box == "received":
+        messages = Message.objects.filter(
+            recipients=profile, archived=False
+        )
+    elif box == "sent":
+        messages = Message.objects.filter(
+            sender=profile
+        )
+    elif box == "archived":
+        messages = Message.objects.filter(
+            recipients=profile, archived=True
+        )
+    else:
+        return JsonResponse({"error": "Invalid box."}, status=400)
+
+    # Return messages in reverse chronologial order
+    try:
+        messages = messages.order_by("-timestamp").all()
+    except:
+        print("no messages")
+        #return JsonResponse({
+        #   "error": f"No messages to returned for {box}"
+        #}, status=400)
+    #return JsonResponse([message.serialize() for message in messages], safe=False)
+    return render(request, "vibe/index.html", {
+        'box_messages': True,
+        'messages': messages,
+    })
+
+
+@csrf_exempt
+@login_required
+def message(request, message_id):
+
+    # Query for requested message
+    try:
+        message = Message.objects.get(pk=message_id)
+    except Message.DoesNotExist:
+        return JsonResponse({"error": "Message not found."}, status=404)
+
+    # Return message contents
+    if request.method == "GET":
+        return JsonResponse(message.serialize())
+
+    # Update whether message is read or should be archived
+    elif request.method == "PUT":
+        data = json.loads(request.body)
+        if data.get("read") is not None:
+            message.read = data["read"]
+        if data.get("archived") is not None:
+            message.archived = data["archived"]
+        message.save()
+        return HttpResponse(status=204)
+
+    # Message must be via GET or PUT
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
+
+@csrf_exempt
+@login_required
+def compose(request):
+
+    # Composing a new message must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    # Check recipient preferred_name
+    data = json.loads(request.body)
+    preferred_names = [preferred_name.strip() for preferred_name in data.get("recipients").split(",")]
+    if preferred_names == [""]:
+        return JsonResponse({
+            "error": "At least one recipient required."
+        }, status=400)
+
+    # Convert preferred_name to profiles
+    recipients = []
+    for preferred_name in preferred_names:
+        try:
+            profile = Profile.objects.get(preferred_name=preferred_name)
+            recipients.append(profile)
+        except User.DoesNotExist:
+            return JsonResponse({
+                "error": f"Profile with preferred name {preferred_name} does not exist."
+            }, status=400)
+
+    # Get contents of message
+    subject = data.get("subject", "")
+    body = data.get("body", "")
+
+    # Create one message for each recipient, plus sender
+    profiles = set()
+    self_profile = Profile.objects.get(user=request.user)
+    profiles.add(profile)
+    profiles.update(recipients)
+    for profile in profiles:
+        message = Message(
+            sender=self_profile,
+            subject=subject,
+            body=body,
+            read=self_profile == profile
+        )
+        message.save()
+        for recipient in recipients:
+            message.recipients.add(recipient)
+        message.save()
+
+    return JsonResponse({"message": "Message sent successfully."}, status=201)

@@ -14,7 +14,7 @@
         <h1>Vibes</h1>
         <div>
             {% if user.is_authenticated %}
-                Signed in as <strong>{{ user.username }}</strong>.
+                Signed in as <strong><a href="/profile/{{user.username }}">{{ user.username }}</a></strong>.
             {% else %}
                 Not signed in.
             {% endif %}
@@ -24,9 +24,18 @@
                 <a class="nav-link" href="{% url 'vibe:index' %}">Vibes</a>
             </li>
             {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'vibe:logout' %}">Log Out</a>
-                </li>
+            <li>
+                <a class="nav-link" href="{% url 'vibe:messages' 'received' %}" id="received">Received</a>
+            </li>
+            <li>
+                <a class="nav-link" href="{% url 'vibe:messages' 'sent' %}" id="sent">Sent</a>
+            </li>
+            <li>
+                <a class="nav-link" href="{% url 'vibe:messages' 'archived' %}" id="archived">Archived</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'vibe:logout' %}">Log Out</a>
+            </li>
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'vibe:login' %}">Log In</a>
@@ -36,7 +45,6 @@
                 </li>
             {% endif %}
         </ul>
-        <hr>
         {% block body %}
         {% endblock %}
     </body>

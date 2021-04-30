@@ -10,7 +10,7 @@
     </a>
     <ul class="vibe-metadata">
         <li> 
-            <a href="{% url 'vibe:profile' vibe.creator %}">{{ vibe.creator }}</a>
+            <a href="/profile/{{vibe.creator}}">{{ vibe.creator }}</a>
         </li>
         <li>
             <a href="javascript:vibeForm({{ vibe.id }});">Edit</a>
@@ -51,9 +51,15 @@
     </li>
 </ul>
 {% endfor %}
-{% elif profile %}
-<h2 class="vibe-profile-name">{{ profile.preferred_name }}</h2>
-<div class="vibe-profile">
+{% elif box_messages %}
+<div id="messages-view">
+{% for message in messages %}
+<div id="message-id-{{ message.id}}" data-read="{{ message.read }}" onclick="read_message({{ message.id }}, {{message.archived}});" class="message"><p class="sender">{{message.sender.user.username}}</p><p class="subject">{{message.subject}}</p><p class="timestamp">{{message.timestamp}}</p></div>
+{% endfor %}
+</div>
+{% elif show_profile %}
+<div class="vibe-profile" id="profile" style="display: block;">
+    <h2 class="vibe-profile-name">{{ profile.preferred_name }}</h2>
     <ul>
         <li> 
             Fans: {{ fan_count }}
@@ -73,12 +79,34 @@
             {% endif %}
         {% endif %}
     </ul>
+    <div id="compose-view">
+        <h3>New Message</h3>
+        <form id="compose-form" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                From: <input disabled class="form-control" value="{{ request.user.username }}">
+            </div>
+            <div class="form-group">
+                To: <input id="compose-recipients" class="form-control">
+            </div>
+            <div class="form-group">
+                <input class="form-control" id="compose-subject" placeholder="Subject">
+            </div>
+            <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
+            <input id='compose-submit' type="submit" class="btn btn-primary"/>
+        </form>
+    </div>
 </div>
-{% else %}
-<div id="vibe">
+<div id="vibe" style="display: none;">
 </div>
-<h3>Community Vibes!</h3>
-<div id="vibes">
+<div id="vibes" style="display: none;">
+</div>
+{% else %}\
+<div class="vibe-profile" id="profile" style="display: none;">
+</div>
+<div id="vibe" style="display: block;">
+</div>
+<div id="vibes" style="display: block;">
 </div>
 {% endif %}
 {% endblock %}

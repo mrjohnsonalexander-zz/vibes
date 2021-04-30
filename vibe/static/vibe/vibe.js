@@ -1,14 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Buttons to toggle between message views
+  document.querySelector('#received').addEventListener('click', () => load_box('received'));
+  document.querySelector('#sent').addEventListener('click', () => load_box('sent'));
+  document.querySelector('#archived').addEventListener('click', () => load_box('archived'));
+  // Form to create vibe with listener button
+  vibeForm();
+  // Default load vibes
+  load_vibes();
+  // Add form listner to send messages
+  document.querySelector('#compose-form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    send_message();
+  });
   // Profile Fan
   document.querySelector('#fan-button').addEventListener('click', (event) => {
     event.preventDefault();
     event.stopPropagation();
     fan();
   });
-  // Default vibe form
-  vibeForm();
-  // Default load vibes
-  load_vibes();
 })
 
 // Continuous vibe scroll
@@ -385,4 +395,141 @@ function getCookie(name) {
       }
   }
   return cookieValue;
+}
+
+async function send_message() {
+  // Send composed message
+  console.log('send_message()');
+  await fetch('/message', {
+    method: 'POST',
+    body: JSON.stringify({
+      recipients: document.querySelector('#compose-recipients').value,
+      subject: document.querySelector('#compose-subject').value,
+      body: document.querySelector('#compose-body').value
+    })
+  }).then(response => response.json()).then(result => {console.log(result)});
+  load_box('sent');
+  return false;
+}
+
+function load_box(box) {
+  console.log(`load_box('${box}') started`);
+  get_messages(box);
+}
+
+function get_messages(box) {
+  console.log(`get_messages('${box}') started`);
+  document.querySelector(`#messages-view`).style = "display: inline-block; margin: 0%; width: 100%; height: 100%;";
+  document.querySelector(`#messages-view`).innerHTML = `<h3>${box.charAt(0).toUpperCase() + box.slice(1)}</h3>`;
+  fetch(`/messages/${box}`, {
+    method: 'GET'
+    }).then(response => response.json())
+    .then(messages => {
+      for(let j = 0; j < 50 && j < messages.length; j++){
+        // Populate box with messages
+        if (document.querySelector(`#messages-view`) != null) {
+          document.querySelector(`#messages-view`).innerHTML += `<div href="javascript:void(0)" data-read=${messages[j].read} onclick="read_message(${messages[j].id}, ${emails[j].archived});" class="message"><p class="sender">${messages[j].sender}</p><p class="subject">${messages[j].subject}</p><p class="timestamp">${messages[j].timestamp}</p></div>`;
+        } else {
+          console.log(`div id "messages-view" not found`);
+        }
+      }
+    })
+}
+
+async function read_message(message_id, archived) {
+  // read message
+  console.log(`read_message(${message_id}, ${archived}) started`);
+  // Hide all but read view
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector(`#received-messages-view`).style.display = 'none';
+  document.querySelector(`#sent-messages-view`).style.display = 'none';
+  document.querySelector(`#archived-messages-view`).style.display = 'none';
+  document.querySelector('#read-view').style.display = 'block';
+  // Update read view
+  await fetch(`/message/${message_id}`, {
+    method: 'GET'
+  }).then(response => response.json()).then(message => {
+    document.querySelector('#read-view > h3').textContent = `Read Message's Timestamp: ${message.timestamp}`;
+    document.querySelector('#read-sender').value = message.sender;
+    document.querySelector('#read-recipients').value = message.recipients;
+    document.querySelector('#read-subject').value = message.subject;
+    document.querySelector('#read-body').value = message.body;
+  });
+  // Update message read property
+  console.log(`Putting message ${message_id} read property true`);
+  await fetch(`/messages/${message_id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      read: true
+    })
+  })
+  // Hide Archive buttun if reading sent message and
+  // set read form archive listener for message being read.
+  await fetch('/messages/sent', {
+    method: 'GET'
+  }).then(response => response.json()).then(messages => {
+    for(let m = 0; m < messages.length; m++) {
+      if (messages[m].id == message_id) {
+        document.querySelector('#read-archive').style.visibility = 'hidden';
+        break;
+      } else {
+        document.querySelector('#read-archive').style.visibility = 'visible';
+      }
+    }
+  })
+  // Archive update
+  await fetch('/message/archive', {
+    method: 'GET'
+  }).then(response => response.json()).then(messages => {
+    for(let q = 0; q < messages.length; q++) {
+      if (messages[q].id == message_id) {
+        document.querySelector('#read-archive').value = "Unarchive";
+        break;
+      } else {
+        document.querySelector('#read-archive').value = "Archive";
+      }
+    }
+  })
+  // By default Archive and Reply to last read messages;
+  last_read_messages = message_id;
+  last_archived = archived;
+}
+
+function compose_message() {
+  console.log('compose_message() started');
+  // Hide all but compose view
+  document.querySelector('#vibe-').style.display = 'none';
+  document.querySelector('#profile').style.display = 'none';
+  document.querySelector('#vibes').style.display = 'none';
+  document.querySelector('#read-view').style.display = 'none';
+  document.querySelector(`#received-messeages-view`).style.display = 'none';
+  document.querySelector(`#sent-messages-view`).style.display = 'none';
+  document.querySelector(`#archived-messages-view`).style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'block';
+  // Clear out composition fields
+  document.querySelector('#compose-recipients').value = '';
+  document.querySelector('#compose-subject').value = '';
+  document.querySelector('#compose-body').value = '';
+}
+
+async function get_profile(name) {
+  console.log(`get_profile(${name})`);
+  //
+  await fetch(`/profile/${name}`, {
+    method: 'GET'
+  }).then(response => response.json()).then(result => {console.log(result)})
+
+  // Hide all but compose view
+  document.querySelector('#vibe-').style.display = 'none';
+  document.querySelector('#profile').style.display = 'block';
+  document.querySelector('#vibes').style.display = 'none';
+  document.querySelector('#read-view').style.display = 'none';
+  document.querySelector(`#received-messeages-view`).style.display = 'block';
+  document.querySelector(`#sent-messages-view`).style.display = 'none';
+  document.querySelector(`#archived-messages-view`).style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'block';
+  // Clear out composition fields
+  document.querySelector('#compose-recipients').value = '';
+  document.querySelector('#compose-subject').value = '';
+  document.querySelector('#compose-body').value = '';
 }

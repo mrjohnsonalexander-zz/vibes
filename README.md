@@ -19,13 +19,13 @@ The following capabilities are enabled:
 - Profile shows Fan/Follow Counts, and "Become a Fan" or "Stop Being a fan" button when viewing profiles that are not the current user.
 - Can autoscolling of Vibes on main page
 - Can toggle being a fan of a profile
+- Can send direct messages to profile preferred_name
 
 # Next things todo:
-- Enable sending/replying/archiving direct messages
-- Enable searching vibes that are sorted by date.
-- Enable users to post reviews of vibes (more detail than a comment)
-- Enable profiles to list all: vibes/reviews posted, and profiles that are a fan of.
-
+- Enable reading body of messages.
+- Enable replying to messages.
+- Enable archiving messages
+- Hide vibeForm when viewing Profiles.
 
 # Future Development
 Research Payments, Push notifications, Emails, Calander, Map, Facebook/Google Auth, Mobile App; flush out account types like: 
@@ -38,6 +38,8 @@ Research Payments, Push notifications, Emails, Calander, Map, Facebook/Google Au
 
 # Things to fix:
 - Location and URL should be optional; currently errors when placeholders not replaced with values.
-- JS error: "AddEventListener of null" due because profile Fan toggle element missing when viewing vibes.
-- JS error: "replceWith of null" occurs when viewing profiles dur to Form element missing.
-- JS error: 403 Forbidden when clicking "become a fan" - refresh screen shows correct count.
+- JS error: "'AddEventListener' of null" because compose-form for messages available when viewing any profile is missing when viewing vibes.
+- Autoscroll will repeated;y append last 10 vibes to end of page when there are no more.
+- JS error: "'replceWith' of null" occurs when viewing "Received" "Sent" or "Archived" messages because vibeForm is missing when viewing message box.
+- JS error: "403 Forbidden" when clicking "become a fan" or "Stop being a fan" on a profile, screen doesn't auto refresh count of "Fans", but refreshing screen shows correct Fan count.
+- JS error: "Cannot set property 'style'" happens when clicking New Message "Submit" button, but clicking "Sent" will show last sent message title. 
