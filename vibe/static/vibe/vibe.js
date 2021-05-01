@@ -428,7 +428,7 @@ function get_messages(box) {
       for(let j = 0; j < 50 && j < messages.length; j++){
         // Populate box with messages
         if (document.querySelector(`#messages-view`) != null) {
-          document.querySelector(`#messages-view`).innerHTML += `<div href="javascript:void(0)" data-read=${messages[j].read} onclick="read_message(${messages[j].id}, ${emails[j].archived});" class="message"><p class="sender"><a href="/profile/${messages[j].sender}">${messages[j].sender}</a></p><p class="subject">${messages[j].subject}</p><p class="timestamp">${messages[j].timestamp}</p><p style="display: none;" class="message-body" id ="message-body-${messages[j].id}">${messages[j].body}</p></div>`;
+          document.querySelector(`#messages-view`).innerHTML += `<div href="javascript:void(0)" data-read=${messages[j].read} onclick="read_message(${messages[j].id}, ${emails[j].archived});" class="message"><p class="sender"><a href="/profile/${messages[j].sender}">${messages[j].sender}</a></p><p class="subject">${messages[j].subject}</p><p class="timestamp">${messages[j].timestamp}</p><p style="display: none;" class="message-body" id ="message-body-${messages[j].id}">${messages[j].body}<a href="javascript:archive_message(${messages[j].id, messages[j].archived});"> Archive</a></p></div>`;
         } else {
           console.log(`div id "messages-view" not found`);
         }
@@ -480,4 +480,22 @@ async function get_profile(name) {
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+}
+
+async function archive_message(message_id, archived) {
+  // convert to boolean
+  if (archived == 'True') {
+    archived = true;
+  } else {
+    archived = false;
+  }
+  // Update message archive
+  console.log(`${message_id} archived PUT !${archived}`);
+  await fetch(`/message/${message_id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+        archived: !archived
+    })
+  })
+  load_box('recieved');
 }
