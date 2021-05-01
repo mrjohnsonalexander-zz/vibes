@@ -20,9 +20,9 @@ The following capabilities are enabled:
 - Can autoscolling of Vibes on main page
 - Can toggle being a fan of a profile
 - Can send direct messages to profile preferred_name
+- Can click any message to display body of that message.
 
 # Next things todo:
-- Enable reading body of messages.
 - Enable replying to messages.
 - Enable archiving messages
 - Hide vibeForm when viewing Profiles.

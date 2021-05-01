@@ -428,7 +428,7 @@ function get_messages(box) {
       for(let j = 0; j < 50 && j < messages.length; j++){
         // Populate box with messages
         if (document.querySelector(`#messages-view`) != null) {
-          document.querySelector(`#messages-view`).innerHTML += `<div href="javascript:void(0)" data-read=${messages[j].read} onclick="read_message(${messages[j].id}, ${emails[j].archived});" class="message"><p class="sender">${messages[j].sender}</p><p class="subject">${messages[j].subject}</p><p class="timestamp">${messages[j].timestamp}</p></div>`;
+          document.querySelector(`#messages-view`).innerHTML += `<div href="javascript:void(0)" data-read=${messages[j].read} onclick="read_message(${messages[j].id}, ${emails[j].archived});" class="message"><p class="sender">${messages[j].sender}</p><p class="subject">${messages[j].subject}</p><p class="timestamp">${messages[j].timestamp}</p><p style="display: none;" class="message-body" id ="message-body-${messages[j].id}">${messages[j].body}</p></div>`;
         } else {
           console.log(`div id "messages-view" not found`);
         }
@@ -440,59 +440,7 @@ async function read_message(message_id, archived) {
   // read message
   console.log(`read_message(${message_id}, ${archived}) started`);
   // Hide all but read view
-  document.querySelector('#compose-view').style.display = 'none';
-  document.querySelector(`#received-messages-view`).style.display = 'none';
-  document.querySelector(`#sent-messages-view`).style.display = 'none';
-  document.querySelector(`#archived-messages-view`).style.display = 'none';
-  document.querySelector('#read-view').style.display = 'block';
-  // Update read view
-  await fetch(`/message/${message_id}`, {
-    method: 'GET'
-  }).then(response => response.json()).then(message => {
-    document.querySelector('#read-view > h3').textContent = `Read Message's Timestamp: ${message.timestamp}`;
-    document.querySelector('#read-sender').value = message.sender;
-    document.querySelector('#read-recipients').value = message.recipients;
-    document.querySelector('#read-subject').value = message.subject;
-    document.querySelector('#read-body').value = message.body;
-  });
-  // Update message read property
-  console.log(`Putting message ${message_id} read property true`);
-  await fetch(`/messages/${message_id}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      read: true
-    })
-  })
-  // Hide Archive buttun if reading sent message and
-  // set read form archive listener for message being read.
-  await fetch('/messages/sent', {
-    method: 'GET'
-  }).then(response => response.json()).then(messages => {
-    for(let m = 0; m < messages.length; m++) {
-      if (messages[m].id == message_id) {
-        document.querySelector('#read-archive').style.visibility = 'hidden';
-        break;
-      } else {
-        document.querySelector('#read-archive').style.visibility = 'visible';
-      }
-    }
-  })
-  // Archive update
-  await fetch('/message/archive', {
-    method: 'GET'
-  }).then(response => response.json()).then(messages => {
-    for(let q = 0; q < messages.length; q++) {
-      if (messages[q].id == message_id) {
-        document.querySelector('#read-archive').value = "Unarchive";
-        break;
-      } else {
-        document.querySelector('#read-archive').value = "Archive";
-      }
-    }
-  })
-  // By default Archive and Reply to last read messages;
-  last_read_messages = message_id;
-  last_archived = archived;
+  document.querySelector(`#message-body-${message_id}`).style.display = 'block';
 }
 
 function compose_message() {

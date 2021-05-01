@@ -54,7 +54,7 @@
 {% elif box_messages %}
 <div id="messages-view">
 {% for message in messages %}
-<div id="message-id-{{ message.id}}" data-read="{{ message.read }}" onclick="read_message({{ message.id }}, {{message.archived}});" class="message"><p class="sender">{{message.sender.user.username}}</p><p class="subject">{{message.subject}}</p><p class="timestamp">{{message.timestamp}}</p></div>
+<div id="message-id-{{ message.id}}" data-read="{{ message.read }}" onclick="read_message({{ message.id }}, '{{message.archived}}');" class="message"><p class="sender">{{message.sender.user.username}}</p><p class="subject">{{message.subject}}</p><p class="timestamp">{{message.timestamp}}</p><p class="message-body" id ="message-body-{{message.id}}" style = "display: none;">{{message.body}}</p></div>
 {% endfor %}
 </div>
 {% elif show_profile %}
