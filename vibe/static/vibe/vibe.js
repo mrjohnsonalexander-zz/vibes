@@ -428,7 +428,7 @@ function get_messages(box) {
       for(let j = 0; j < 50 && j < messages.length; j++){
         // Populate box with messages
         if (document.querySelector(`#messages-view`) != null) {
-          document.querySelector(`#messages-view`).innerHTML += `<div href="javascript:void(0)" data-read=${messages[j].read} onclick="read_message(${messages[j].id}, ${emails[j].archived});" class="message"><p class="sender">${messages[j].sender}</p><p class="subject">${messages[j].subject}</p><p class="timestamp">${messages[j].timestamp}</p><p style="display: none;" class="message-body" id ="message-body-${messages[j].id}">${messages[j].body}</p></div>`;
+          document.querySelector(`#messages-view`).innerHTML += `<div href="javascript:void(0)" data-read=${messages[j].read} onclick="read_message(${messages[j].id}, ${emails[j].archived});" class="message"><p class="sender"><a href="/profile/${messages[j].sender}">${messages[j].sender}</a></p><p class="subject">${messages[j].subject}</p><p class="timestamp">${messages[j].timestamp}</p><p style="display: none;" class="message-body" id ="message-body-${messages[j].id}">${messages[j].body}</p></div>`;
         } else {
           console.log(`div id "messages-view" not found`);
         }

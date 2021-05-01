@@ -21,11 +21,10 @@ The following capabilities are enabled:
 - Can toggle being a fan of a profile
 - Can send direct messages to profile preferred_name
 - Can click any message to display body of that message.
+- Can click on message sender to return to their profile where you can send another direct message.
 
 # Next things todo:
-- Enable replying to messages.
 - Enable archiving messages
-- Hide vibeForm when viewing Profiles.
 
 # Future Development
 Research Payments, Push notifications, Emails, Calander, Map, Facebook/Google Auth, Mobile App; flush out account types like: 
