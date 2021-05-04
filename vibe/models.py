@@ -65,8 +65,11 @@ class Comment(models.Model):
 
 
 class Message(models.Model):
-    sender = models.ForeignKey("Profile", on_delete=models.CASCADE, related_name="senders_name")
-    recipients = models.ManyToManyField("Profile", related_name="recipients_name")
+    sender = models.ForeignKey("Profile",
+                               on_delete=models.CASCADE,
+                               related_name="senders_name")
+    recipients = models.ManyToManyField("Profile",
+                                        related_name="recipients_name")
     subject = models.CharField(max_length=255)
     body = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -77,7 +80,8 @@ class Message(models.Model):
         return {
             "id": self.id,
             "sender": self.sender.user.username,
-            "recipients": [profile.user.username for profile in self.recipients.all()],
+            "recipients": [profile.user.username
+                           for profile in self.recipients.all()],
             "subject": self.subject,
             "body": self.body,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),

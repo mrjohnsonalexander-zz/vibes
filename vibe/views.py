@@ -166,7 +166,8 @@ def vibe(request, vibe_id=None):
 def vibes(request):
     # Authenticated users view vibes
     if request.user.is_authenticated:
-        vibes = Vibe.objects.prefetch_related('creator').all().order_by('-date_created')
+        vibes = Vibe.objects.prefetch_related('creator') \
+            .all().order_by('-date_created')
         # Paginator
         paginator = Paginator(vibes, 10)
         page_number = request.GET.get('page')
@@ -180,15 +181,16 @@ def vibes(request):
                 'location': page_vibes[i].location,
                 'creator': page_vibes[i].creator.username,
                 'cheers': page_vibes[i].cheers,
-                'date_created': page_vibes[i].date_created.strftime("%B %d,%Y, %I:%M %p"),
+                'date_created': page_vibes[i].date_created
+                .strftime("%B %d,%Y, %I:%M %p"),
                 'img_url': page_vibes[i].img_url,
             }
         return JsonResponse(vibes_json, safe=False)
 
 
-
 def vibe_details(request, vibe_id):
-    vibe = Vibe.objects.prefetch_related('creator').get(pk=vibe_id)
+    vibe = Vibe.objects.prefetch_related('creator') \
+        .get(pk=vibe_id)
     vibe_json = {
         'id': vibe.pk,
         'title': vibe.title,
@@ -196,7 +198,8 @@ def vibe_details(request, vibe_id):
         'location': vibe.location,
         'creator': vibe.creator.username,
         'cheers': vibe.cheers,
-        'date_created': vibe.date_created.strftime("%B %d,%Y, %I:%M %p"),
+        'date_created': vibe.date_created
+        .strftime("%B %d,%Y, %I:%M %p"),
         'img_url': vibe.img_url,
     }
     return JsonResponse(vibe_json, safe=False)
@@ -272,7 +275,6 @@ def fan(request, profileid, fan):
     else:
         print("something went wrong")
     profile = Profile.objects.prefetch_related('user').get(pk=profileid)
-    #return HttpResponseRedirect(reverse("vibe:profile" + '/' + profile.user.username))
     return HttpResponseRedirect(reverse("vibe:index"))
 
 
@@ -353,12 +355,11 @@ def messages(request, box):
     # Return messages in reverse chronologial order
     try:
         messages = messages.order_by("-timestamp").all()
-    except:
+    except Message.DoesNotExit:
         print("no messages")
-        #return JsonResponse({
-        #   "error": f"No messages to returned for {box}"
-        #}, status=400)
-    #return JsonResponse([message.serialize() for message in messages], safe=False)
+        return JsonResponse({
+           "error": f"No messages to returned for {box}"
+        }, status=400)
     return render(request, "vibe/index.html", {
         'box_messages': True,
         'messages': messages,
@@ -395,6 +396,7 @@ def message(request, message_id):
             "error": "GET or PUT request required."
         }, status=400)
 
+
 @csrf_exempt
 @login_required
 def compose(request):
@@ -405,7 +407,8 @@ def compose(request):
 
     # Check recipient preferred_name
     data = json.loads(request.body)
-    preferred_names = [preferred_name.strip() for preferred_name in data.get("recipients").split(",")]
+    preferred_names = [preferred_name.strip()
+                       for preferred_name in data.get("recipients").split(",")]
     if preferred_names == [""]:
         return JsonResponse({
             "error": "At least one recipient required."
@@ -419,7 +422,8 @@ def compose(request):
             recipients.append(profile)
         except User.DoesNotExist:
             return JsonResponse({
-                "error": f"Profile with preferred name {preferred_name} does not exist."
+                "error": f"Profile with preferred name \
+                    {preferred_name} does not exist."
             }, status=400)
 
     # Get contents of message
