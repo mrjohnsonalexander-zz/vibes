@@ -24,6 +24,7 @@ The following capabilities are enabled:
 - Can click on message sender to return to their profile where you can send another direct message.
 - Can click on message archive link to update message archive value.
 - Can click on Archived nav to view archived messages.
+- Can view metrics in honeycomb: https://ui.honeycomb.io/mrjohnsonalexander/datasets/vibes
 
 # Next things todo:
 - Get feedback on status.
